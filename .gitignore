@@ -103,3 +103,6 @@ work-logs/*
 
 # local input files
 input-files/*
+
+# test views
+dashboard-api/views
