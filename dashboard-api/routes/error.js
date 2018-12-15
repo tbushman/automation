@@ -16,7 +16,8 @@ function provideErrorMiddleware(app) {
       expressWinston.logger({
         winstonInstance,
         meta: false, // optional: log meta data about request (defaults to true)
-        msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
+        msg:
+          'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
         colorStatus: true // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
       })
     );
@@ -26,7 +27,9 @@ function provideErrorMiddleware(app) {
   app.use((err, req, res, next) => {
     if (err instanceof expressValidation.ValidationError) {
       // validation error contains errors which is an array of error each containing message[]
-      const unifiedErrorMessage = err.errors.map(error => error.messages.join('. ')).join(' and ');
+      const unifiedErrorMessage = err.errors
+        .map(error => error.messages.join('. '))
+        .join(' and ');
       const error = new APIError(unifiedErrorMessage, err.status, true);
       return next(error);
     } else if (!(err instanceof APIError)) {
@@ -64,7 +67,8 @@ function provideErrorMiddleware(app) {
   ) =>
     res.status(err.status).json({
       message: err.isPublic ? err.message : httpStatus[err.status],
-      stack: config.env === 'development' ? JSON.stringify(err.stack, null, 2) : {}
+      stack:
+        config.env === 'development' ? JSON.stringify(err.stack, null, 2) : {}
     })
   );
 }

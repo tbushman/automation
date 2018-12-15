@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const fs = require('fs');
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
@@ -18,8 +17,7 @@ const app = express();
 if (config.env === 'development') {
   app.use(logger('dev'));
 }
-const { 
-  catchAll,
+const {
   pareto,
   pr,
   search,
@@ -27,15 +25,19 @@ const {
   getCurrData,
   probot
 } = require('./routes');
+
 app.use(cors());
 
- // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'pug');
 app.use(express.static(path.join(__dirname, '../dashboard-client/build')));
 app.use((request, response, next) => {
   response.header('Access-Control-Allow-Origin', '*');
-  response.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  response.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
   response.header('Access-Control-Allow-Methods', 'GET');
   next();
 });
@@ -47,11 +49,15 @@ app.use('/pareto', pareto);
 app.use('/info', info);
 app.use('/getCurrData', getCurrData);
 app.use('/probot', probot);
-app.get('/', (request, response) => {
+/* app.get('/', (request, response) => {
   response.render('index')
-})
-app.get('/', (request, response) => response.sendFile(path.resolve(__dirname, '..', '/dashboard-client/build/index.html')));
-//app.use('*', catchAll);
+})*/
+app.get('/', (request, response) =>
+  response.sendFile(
+    path.resolve(__dirname, '..', '/dashboard-client/build/index.html')
+  )
+);
+// app.use('*', catchAll);
 provideErrorMiddleware(app);
 
 // make bluebird default Promise
@@ -61,13 +67,18 @@ Promise = require('bluebird'); // eslint-disable-line no-global-assign
 mongoose.Promise = Promise;
 // connect to mongo db
 const mongoUri = config.mongo.host;
-const promise = mongoose.connect(mongoUri, { useNewUrlParser: true });
-promise.then(function(db){
-  console.log('MongoDB is connected')
-}).catch(function(err){
-  console.log(err)
-  console.log('MongoDB connection unsuccessful')
-});
+const promise = mongoose.connect(
+  mongoUri,
+  { useNewUrlParser: true }
+);
+promise
+  .then(function() {
+    console.log('MongoDB is connected');
+  })
+  .catch(function(err) {
+    console.log(err);
+    console.log('MongoDB connection unsuccessful');
+  });
 
 const listener = app.listen(config.port, () => {
   console.log('Your app is listening on port ' + listener.address().port);

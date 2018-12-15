@@ -6,7 +6,8 @@
     "presolver": "probot/index.js"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
+    "bootstrap": "lerna bootstrap && npm run build && npm run lint",
+    "build": "lerna run build",
     "postinstall": "npm run bootstrap",
     "start": "lerna run start",
     "dev": "nodemon",
@@ -27,6 +28,9 @@
     "apps": [
       "presolver"
     ]
+  },
+  "dependencies": {
+    "ajv": "^6.6.1",
+    "ajv-keywords": "^3.2.0"
   }
 }
-

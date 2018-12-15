@@ -15,20 +15,21 @@ const PrResults = ({ searchValue, results }) => {
     const files = filenames.map((filename, index) => {
       return <li key={`${number}-${index}`}>{filename}</li>;
     });
-    const prUrl = `https://github.com/freeCodeCamp/freeCodeCamp/pull/${number}`
+    const prUrl = `https://github.com/freeCodeCamp/freeCodeCamp/pull/${number}`;
 
     return (
       <Container key={`${number}-${idx}`}>
-        {!Number(number)
-          ? number
-          : <>
-              <a href={prUrl} rel="noopener noreferrer" target="_blank">{number}</a>
-              <span>&nbsp;{username}</span>
-            </>
-        }
-        <List>
-          {files}
-        </List>
+        {!Number(number) ? (
+          number
+        ) : (
+          <>
+            <a href={prUrl} rel="noopener noreferrer" target="_blank">
+              {number}
+            </a>
+            <span>&nbsp;{username}</span>
+          </>
+        )}
+        <List>{files}</List>
       </Container>
     );
   });

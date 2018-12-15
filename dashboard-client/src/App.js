@@ -45,20 +45,30 @@ class App extends Component {
     view: 'search'
   };
 
-  handleViewChange = ( { target: { id } }) => {
+  handleViewChange = ({ target: { id } }) => {
     const view = id.replace('tabs-', '');
-    this.setState((prevState) => ({ ...this.clearObj, view }));
-  }
+    this.setState(prevState => ({ ...this.clearObj, view }));
+  };
 
   render() {
-    const { handleViewChange, state: { view } } = this;
+    const {
+      handleViewChange,
+      state: { view }
+    } = this;
     return (
       <PageContainer>
-        <Title><img style={imgStyle} src="https://discourse-user-assets.s3.dualstack.us-east-1.amazonaws.com/original/3X/e/d/ed1c70bda321aaeee9e6c20ab650ce8bc34899fa.svg" alt="Free Code Camp Logo" /> Moderator Tools</Title>
-        <Tabs view={view} onViewChange={handleViewChange}/>
+        <Title>
+          <img
+            style={imgStyle}
+            src="https://discourse-user-assets.s3.dualstack.us-east-1.amazonaws.com/original/3X/e/d/ed1c70bda321aaeee9e6c20ab650ce8bc34899fa.svg"
+            alt="Free Code Camp Logo"
+          />{' '}
+          Moderator Tools
+        </Title>
+        <Tabs view={view} onViewChange={handleViewChange} />
         <Container>
-          { view === 'search' && <Search /> }
-          { view === 'reports' && <Pareto /> }
+          {view === 'search' && <Search />}
+          {view === 'reports' && <Pareto />}
         </Container>
         <Footer />
       </PageContainer>

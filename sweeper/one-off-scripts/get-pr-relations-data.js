@@ -24,19 +24,19 @@ class Log {
       indices: this._indicesObj,
       prs: this._prsArr
     };
-    saveToFile(this._logfile, JSON.stringify(log))
+    saveToFile(this._logfile, JSON.stringify(log));
   }
 
   getPrRange() {
     const first = this._prsArr[0].number;
-    const last = this._prsArr[this._prsArr.length -1].number;
+    const last = this._prsArr[this._prsArr.length - 1].number;
     return [first, last];
     // return [null, null]
   }
 
   add(prNum, props) {
     this._prsArr.push(props);
-    this._indicesObj[prNum] = this._prsArr.length -1;
+    this._indicesObj[prNum] = this._prsArr.length - 1;
   }
 
   start() {
@@ -47,21 +47,24 @@ class Log {
   finish() {
     this._finishTime = new Date();
     const minutesElapsed = (this._finishTime - this._startTime) / 1000 / 60;
-    this._elapsedTime =  minutesElapsed.toFixed(2) + ' mins';
+    this._elapsedTime = minutesElapsed.toFixed(2) + ' mins';
     this.export();
     this.changeFilename(this.getPrRange());
   }
 
-  changeFilename( [first, last] ) {
+  changeFilename([first, last]) {
     const now = formatDate(new Date(), 'YYYY-MM-DDTHHmmss');
-    const newFilename = path.resolve(__dirname,`../work-logs/pr-relations_${first}-${last}_${now}.json`);
+    const newFilename = path.resolve(
+      __dirname,
+      `../work-logs/pr-relations_${first}-${last}_${now}.json`
+    );
     fs.rename(this._logfile, newFilename, function(err) {
       if (err) {
-        throw('ERROR: ' + err);
+        throw 'ERROR: ' + err;
       }
     });
   }
-};
+}
 
 const { owner, repo, octokitConfig, octokitAuth } = require('../constants');
 
@@ -80,16 +83,27 @@ const log = new Log();
 
   if (openPRs.length) {
     log.start();
-    const getFilesBar = new _cliProgress.Bar({
-      format: `Part 2 of 2: Retrieving filenames [{bar}] {percentage}% | {value}/{total}`
-    }, _cliProgress.Presets.shades_classic);
+    const getFilesBar = new _cliProgress.Bar(
+      {
+        format: `Part 2 of 2: Retrieving filenames [{bar}] {percentage}% | {value}/{total}`
+      },
+      _cliProgress.Presets.shades_classic
+    );
     getFilesBar.start(openPRs.length, 0);
     for (let count in openPRs) {
-      let { number, updated_at, user: { login: username } } = openPRs[count];
-      const { data: prFiles } = await octokit.pullRequests.listFiles({ owner, repo, number });
+      let {
+        number,
+        updated_at,
+        user: { login: username }
+      } = openPRs[count];
+      const { data: prFiles } = await octokit.pullRequests.listFiles({
+        owner,
+        repo,
+        number
+      });
       const filenames = prFiles.map(({ filename }) => filename);
       log.add(number, { number, updated_at, username, filenames });
-      if (+count > 3000 ) {
+      if (+count > 3000) {
         await rateLimiter(1500);
       }
       if (+count % 10 === 0) {
@@ -100,11 +114,11 @@ const log = new Log();
     getFilesBar.stop();
   }
 })()
-.then(() => {
-  log.finish();
-  console.log('Finished retrieving pr-relations data');
-})
-.catch(err => {
-  log.finish();
-  console.log(err)
-})
+  .then(() => {
+    log.finish();
+    console.log('Finished retrieving pr-relations data');
+  })
+  .catch(err => {
+    log.finish();
+    console.log(err);
+  });

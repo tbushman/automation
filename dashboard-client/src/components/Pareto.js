@@ -33,25 +33,32 @@ class Pareto extends React.Component {
   };
 
   componentDidMount() {
+    console.log(ENDPOINT_PARETO)
     fetch(ENDPOINT_PARETO)
-      .then((response) => response.json())
+      .then(response => response.json())
       .then(({ ok, pareto }) => {
         if (ok) {
           if (!pareto.length) {
-            pareto.push({ filename: 'Nothing to show in Pareto Report', count: 0, prs: [] });
+            pareto.push({
+              filename: 'Nothing to show in Pareto Report',
+              count: 0,
+              prs: []
+            });
           }
-          this.setState((prevState) => ({ data: pareto }));
+          this.setState(prevState => ({ data: pareto }));
         }
       })
       .catch(() => {
-        const pareto = [{ filename: 'Nothing to show in Pareto Report', count: 0, prs: [] }];
-        this.setState((prevState) => ({ data: pareto }));
+        const pareto = [
+          { filename: 'Nothing to show in Pareto Report', count: 0, prs: [] }
+        ];
+        this.setState(prevState => ({ data: pareto }));
       });
   }
 
   render() {
     const { data } = this.state;
-    const elements = data.map((entry) => {
+    const elements = data.map(entry => {
       const { filename, count, prs } = entry;
       const prsList = prs.map(({ number, username }) => {
         const prUrl = `https://github.com/freeCodeCamp/freeCodeCamp/pull/${number}`;
@@ -59,11 +66,12 @@ class Pareto extends React.Component {
           <ListItem href={prUrl} rel="noopener noreferrer" target="_blank">
             #{number} <span>({username})</span>
           </ListItem>
-        )
+        );
       });
       return (
         <Result key={filename}>
-          <span style={filenameTitle}>{filename}</span><br />
+          <span style={filenameTitle}>{filename}</span>
+          <br />
           <details style={detailsStyle}>
             <summary># of PRs: {count}</summary>
             <List>{prsList}</List>
@@ -72,11 +80,7 @@ class Pareto extends React.Component {
       );
     });
 
-    return (
-      <div>
-        {data.length ? elements : 'Report Loading...'}
-      </div>
-    );
+    return <div>{data.length ? elements : 'Report Loading...'}</div>;
   }
 }
 

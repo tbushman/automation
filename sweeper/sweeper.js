@@ -1,8 +1,9 @@
 /*
-This script was originally created to iterate over all open PRs to label and comment
+This script was originally created to iterate over all open PRs to label/comment
 on specific PR errors (i.e. guide related filenmame syntax and frontmatter).
 
-Since the first run which covered over 10,000+ PRs, it is curently ran every couple of days
+Since the first run which covered over 10,000+ PRs, it is curently ran every
+couple of days
 for just the most recent PRs.
 
 To run the script for a specific range (i.e. label and comment on guide errors),
@@ -24,7 +25,7 @@ const log = new ProcessingLog('sweeper');
 
 log.start();
 console.log('Sweeper started...');
-(async () => {
+(async() => {
   const { firstPR, lastPR } = await getUserInput();
   log.setFirstLast({ firstPR, lastPR });
   const prPropsToGet = ['number', 'labels', 'user'];
@@ -33,26 +34,51 @@ console.log('Sweeper started...');
   if (openPRs.length) {
     savePrData(openPRs, firstPR, lastPR);
     console.log('Processing PRs...');
-    for (let count in openPRs) {
-      let { number, labels: currentLabels, user: { login: username } } = openPRs[count];
-      const { data: prFiles } = await octokit.pullRequests.listFiles({ owner, repo, number });
+    /* eslint-disable guard-for-in */
 
-      const guideFolderErrorsComment = await guideFolderChecks(number, prFiles, username);
-      const commentLogVal = guideFolderErrorsComment ? guideFolderErrorsComment : 'none';
+    if (Array.isArray(openPRs)) {
+      for (let count in openPRs) {
+        let {
+          number,
+          labels: currentLabels,
+          user: { login: username }
+        } = openPRs[count];
+        const { data: prFiles } = await octokit.pullRequests.listFiles({
+          owner,
+          repo,
+          number
+        });
 
-      const labelsAdded = await labeler(number, prFiles, currentLabels, guideFolderErrorsComment);
-      const labelLogVal = labelsAdded.length ? labelsAdded : 'none added';
+        const guideFolderErrorsComment = await guideFolderChecks(
+          number,
+          prFiles,
+          username
+        );
+        const commentLogVal = guideFolderErrorsComment
+          ? guideFolderErrorsComment
+          : 'none';
 
-      log.add(number, { comment: commentLogVal, labels: labelLogVal });
-      await rateLimiter(+process.env.RATELIMIT_INTERVAL | 1500);
+        const labelsAdded = await labeler(
+          number,
+          prFiles,
+          currentLabels,
+          guideFolderErrorsComment
+        );
+        const labelLogVal = labelsAdded.length ? labelsAdded : 'none added';
+
+        log.add(number, { comment: commentLogVal, labels: labelLogVal });
+        await rateLimiter(+process.env.RATELIMIT_INTERVAL || 1500);
+      }
     }
+    /* eslint-enable guard-for-in */
+
   }
 })()
-.then(() => {
-  log.finish();
-  console.log('Sweeper complete');
-})
-.catch(err => {
-  log.finish();
-  console.log(err)
-})
+  .then(() => {
+    log.finish();
+    console.log('Sweeper complete');
+  })
+  .catch(err => {
+    log.finish();
+    console.log(err);
+  });

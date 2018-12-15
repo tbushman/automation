@@ -6,7 +6,7 @@ router.get('/', (request, response) => {
   PR.find({}, (err, prs) => {
     if (err) {
       // TODO: better err handler
-      console.log(err)
+      console.log(err);
     }
     if (prs.length === 0) {
       requestPrs((err, results) => {
@@ -18,7 +18,7 @@ router.get('/', (request, response) => {
           numPRs: results.openPRs.length,
           prRange: `${firstPR}-${lastPR}`
         });
-      })
+      });
     } else {
       const firstPR = prs[0].number;
       const lastPR = prs[prs.length - 1].number;
@@ -30,7 +30,6 @@ router.get('/', (request, response) => {
         prRange: `${firstPR}-${lastPR}`
       });
     }
-    
   });
 });
 

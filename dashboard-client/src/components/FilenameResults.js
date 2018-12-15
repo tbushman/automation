@@ -12,21 +12,24 @@ const ListItem = styled.div`
 `;
 
 const FilenameResults = ({ searchValue, results }) => {
-  const elements = results.map((result) => {
+  const elements = results.map(result => {
     const { filename, prs: prObjects } = result;
     const prs = prObjects.map(({ number }, index) => {
       const prUrl = `https://github.com/freeCodeCamp/freeCodeCamp/pull/${number}`;
-      return <ListItem key={`${filename}-${index}`}>
-        • <a href={prUrl} rel="noopener noreferrer" target="_blank">{number}</a>
-      </ListItem>;
+      return (
+        <ListItem key={`${filename}-${index}`}>
+          •{' '}
+          <a href={prUrl} rel="noopener noreferrer" target="_blank">
+            {number}
+          </a>
+        </ListItem>
+      );
     });
 
     return (
       <div key={filename}>
         {filename}
-        <List>
-          {prs}
-        </List>
+        <List>{prs}</List>
       </div>
     );
   });

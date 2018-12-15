@@ -18,14 +18,15 @@ class Footer extends Component {
     numPRs: null,
     prRange: null,
     lastUpdate: null
-  }
+  };
 
   componentDidMount() {
+    console.log(ENDPOINT_INFO)
     fetch(ENDPOINT_INFO)
-      .then((response) => response.json())
+      .then(response => response.json())
       .then(({ ok, numPRs, prRange, lastUpdate }) => {
         if (ok) {
-          this.setState((prevState) => ({ numPRs, prRange, lastUpdate }));
+          this.setState(prevState => ({ numPRs, prRange, lastUpdate }));
         }
       })
       .catch(() => {
@@ -43,10 +44,12 @@ class Footer extends Component {
     return (
       <Container>
         <Info>Last Update: {this.localTime(lastUpdate)}</Info>
-        <Info># of open PRs: {numPRs} ({prRange})</Info>
+        <Info>
+          # of open PRs: {numPRs} ({prRange})
+        </Info>
       </Container>
     );
   }
-};
+}
 
 export default Footer;
